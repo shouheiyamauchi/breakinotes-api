@@ -58,6 +58,7 @@ router.put('/:id', (req, res) => {
     move.notes = req.body.notes;
     move.startingPosition = req.body.startingPosition;
     move.parentMove = req.body.parentMove;
+    move.updated = Date.now();
 
     if (req.body.endingPositions) {
       JSON.parse(req.body.endingPositions).forEach((endingPosition) => {
@@ -71,10 +72,8 @@ router.put('/:id', (req, res) => {
       });
     };
 
-    console.log(move.endingPositions);
-
     move.save((err, move) => {
-      if (err) return res.status(500).send("There was a problem updating the move.");
+      if (err) return res.status(500).send(err);
       res.status(200).send(move);
     });
   });
