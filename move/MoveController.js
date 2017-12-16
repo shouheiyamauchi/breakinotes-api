@@ -48,6 +48,38 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.put('/:id', (req, res) => {
+  Move.findById(req.params.id, (err, move) => {
+    if (err) return res.status(500).send("There was a problem finding the move.");
+    if (!move) return res.status(404).send("No move found.");
+    move.name = req.body.name;
+    move.creationCategory = req.body.creationCategory;
+    move.moveCategory = req.body.moveCategory;
+    move.notes = req.body.notes;
+    move.startingPosition = req.body.startingPosition;
+    move.parentMove = req.body.parentMove;
+
+    if (req.body.endingPositions) {
+      JSON.parse(req.body.endingPositions).forEach((endingPosition) => {
+        move.endingPositions.push(endingPosition);
+      });
+    };
+
+    if (req.body.childMoves) {
+      JSON.parse(req.body.childMoves).forEach((childMove) => {
+        move.childMoves.push(childMove);
+      });
+    };
+
+    console.log(move.endingPositions);
+
+    move.save((err, move) => {
+      if (err) return res.status(500).send("There was a problem updating the move.");
+      res.status(200).send(move);
+    });
+  });
+});
+
 router.delete('/:id', (req, res) => {
   Move.findByIdAndRemove(req.params.id, (err, move) => {
     if (err) return res.status(500).send("There was a problem deleting the move.");
@@ -55,42 +87,5 @@ router.delete('/:id', (req, res) => {
     res.status(200).send(move.name + " was deleted.");
   });
 });
-
-// app.get('/notes/:id', (req, res) => {
-//   const id = req.params.id;
-//   const details = { '_id': new ObjectID(id) };
-//   db.collection('notes').findOne(details, (err, item) => {
-//     if (err) {
-//       res.send({'error':'An error has occurred'});
-//     } else {
-//       res.send(item);
-//     };
-//   });
-// });
-//
-// app.delete('/notes/:id', (req, res) => {
-//   const id = req.params.id;
-//   const details = { '_id': new ObjectID(id) };
-//   db.collection('notes').remove(details, (err, item) => {
-//     if (err) {
-//       res.send({'error':'An error has occurred'});
-//     } else {
-//       res.send('Note ' + id + ' deleted');
-//     };
-//   });
-// });
-//
-// app.put('/notes/:id', (req, res) => {
-//   const id = req.params.id;
-//   const details = { '_id': new ObjectID(id) };
-//   const note  = { 'text': req.body.body, 'title': req.body.title };
-//   db.collection('notes').update(details, note, (err, result) => {
-//     if (err) {
-//       res.send({'error': 'An error has occurred'});
-//     } else {
-//       res.send(note);
-//     };
-//   });
-// });
 
 module.exports = router;
