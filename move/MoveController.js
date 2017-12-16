@@ -6,12 +6,28 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const Move = require('./Move');
 
 router.post('/', (req, res) => {
-  Move.create({
+  let move = new Move({
     name: req.body.name,
     creationCategory: req.body.creationCategory,
     moveCategory: req.body.moveCategory,
-    notes: req.body.notes
-  }, (err, move) => {
+    notes: req.body.notes,
+    startingPosition: req.body.startingPosition,
+    parentMove: req.body.parentMove
+  });
+
+  if (req.body.endingPositions) {
+    JSON.parse(req.body.endingPositions).forEach((endingPosition) => {
+      move.endingPositions.push(endingPosition);
+    });
+  };
+
+  if (req.body.childMoves) {
+    JSON.parse(req.body.childMoves).forEach((childMove) => {
+      move.childMoves.push(childMove);
+    });
+  };
+
+  move.save((err, move) => {
     if (err) {
       res.status(500).send("There was a problem adding the move to the database.");
     } else {

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
 const moveSchema = new Schema({
@@ -6,15 +7,13 @@ const moveSchema = new Schema({
   creationCategory: { type: String, index: true },
   moveCategory: { type: String, index: true },
   notes: String,
-  startingPositions: [
-    { type: Schema.Types.ObjectId, index: true }
-  ],
+  startingPosition: { type: Schema.Types.ObjectId, ref: 'Move', index: true },
   endingPositions: [
-    { type: Schema.Types.ObjectId, index: true }
+    { type: Schema.Types.ObjectId, ref: 'Move', index: true }
   ],
-  parentMove: Schema.Types.ObjectId,
+  parentMove: { type: Schema.Types.ObjectId, ref: 'Move' },
   childMoves: [
-    Schema.Types.ObjectId
+    { type: Schema.Types.ObjectId, ref: 'Move' }
   ],
   multimedia: [
     {
