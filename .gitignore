@@ -1,0 +1,8 @@
+# OS X
+.DS_Store*
+Icon?
+._*
+
+# Node
+node_modules
+package-lock.json
