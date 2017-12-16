@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 
-router.user(bodyParer.urlencoded({ encoded: true }));
+router.use(bodyParser.urlencoded({ extended: true }));
 const Move = require('./Move');
 
 router.post('/', (req, res) => {
