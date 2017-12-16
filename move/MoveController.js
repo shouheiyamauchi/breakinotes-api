@@ -48,6 +48,14 @@ router.get('/:id', (req, res) => {
   });
 });
 
+router.delete('/:id', (req, res) => {
+  Move.findByIdAndRemove(req.params.id, (err, move) => {
+    if (err) return res.status(500).send("There was a problem deleting the move.");
+    if (!move) return res.status(404).send("No move found.");
+    res.status(200).send(move.name + " was deleted.");
+  });
+});
+
 // app.get('/notes/:id', (req, res) => {
 //   const id = req.params.id;
 //   const details = { '_id': new ObjectID(id) };
