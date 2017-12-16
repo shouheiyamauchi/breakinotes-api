@@ -6,7 +6,9 @@ const mongoose = require('mongoose');
 router.use(bodyParser.urlencoded({ extended: true }));
 const Move = require('./moveModel');
 
-router.post('/', (req, res) => {
+router.post('/', postFunction);
+
+function postFunction(req, res) {
   const move = new Move();
   move.name = req.body.name;
   move.creationCategory = req.body.creationCategory;
@@ -21,7 +23,7 @@ router.post('/', (req, res) => {
     if (err) return res.status(500).send(err);
     res.status(200).send(move);
   });
-});
+}
 
 router.get('/', (req, res) => {
   Move.find({}, (err, moves) => {
