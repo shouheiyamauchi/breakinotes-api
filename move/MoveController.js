@@ -28,21 +28,23 @@ router.post('/', (req, res) => {
   };
 
   move.save((err, move) => {
-    if (err) {
-      res.status(500).send("There was a problem adding the move to the database.");
-    } else {
-      res.status(200).send(move);
-    };
+    if (err) return res.status(500).send("There was a problem adding the move to the database.");
+    res.status(200).send(move);
   });
 });
 
 router.get('/', (req, res) => {
   Move.find({}, (err, moves) => {
-    if (err) {
-      res.status(500).send("There was a problem finding the moves.");
-    } else {
-      res.status(200).send(moves);
-    };
+    if (err) return res.status(500).send("There was a problem finding the moves.");
+    res.status(200).send(moves);
+  });
+});
+
+router.get('/:id', (req, res) => {
+  Move.findById(req.params.id, (err, move) => {
+    if (err) return res.status(500).send("There was a problem finding the move.");
+    if (!move) return res.status(404).send("No move found.");
+    res.status(200).send(move);
   });
 });
 
