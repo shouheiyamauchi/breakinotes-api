@@ -1,48 +1,38 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 router.use(bodyParser.urlencoded({ extended: true }));
-const Move = require('./Move');
+const Move = require('./moveModel');
 
 router.post('/', (req, res) => {
-  let move = new Move({
-    name: req.body.name,
-    creationCategory: req.body.creationCategory,
-    moveCategory: req.body.moveCategory,
-    notes: req.body.notes,
-    startingPosition: req.body.startingPosition,
-    parentMove: req.body.parentMove
-  });
-
-  if (req.body.endingPositions) {
-    JSON.parse(req.body.endingPositions).forEach((endingPosition) => {
-      move.endingPositions.push(endingPosition);
-    });
-  };
-
-  if (req.body.childMoves) {
-    JSON.parse(req.body.childMoves).forEach((childMove) => {
-      move.childMoves.push(childMove);
-    });
-  };
+  const move = new Move();
+  move.name = req.body.name;
+  move.creationCategory = req.body.creationCategory;
+  move.moveCategory = req.body.moveCategory;
+  move.notes = req.body.notes;
+  move.startingPosition = req.body.startingPosition;
+  move.endingPositions = convertObjectIdArray(req, 'endingPositions');
+  move.parentMove = req.body.parentMove;
+  move.childMoves = convertObjectIdArray(req, 'childMoves');
 
   move.save((err, move) => {
-    if (err) return res.status(500).send("There was a problem adding the move to the database.");
+    if (err) return res.status(500).send(err);
     res.status(200).send(move);
   });
 });
 
 router.get('/', (req, res) => {
   Move.find({}, (err, moves) => {
-    if (err) return res.status(500).send("There was a problem finding the moves.");
+    if (err) return res.status(500).send(err);
     res.status(200).send(moves);
   });
 });
 
 router.get('/:id', (req, res) => {
   Move.findById(req.params.id, (err, move) => {
-    if (err) return res.status(500).send("There was a problem finding the move.");
+    if (err) return res.status(500).send(err);
     if (!move) return res.status(404).send("No move found.");
     res.status(200).send(move);
   });
@@ -50,27 +40,17 @@ router.get('/:id', (req, res) => {
 
 router.put('/:id', (req, res) => {
   Move.findById(req.params.id, (err, move) => {
-    if (err) return res.status(500).send("There was a problem finding the move.");
+    if (err) return res.status(500).send(err);
     if (!move) return res.status(404).send("No move found.");
     move.name = req.body.name;
     move.creationCategory = req.body.creationCategory;
     move.moveCategory = req.body.moveCategory;
     move.notes = req.body.notes;
     move.startingPosition = req.body.startingPosition;
+    move.endingPositions = convertObjectIdArray(req, 'endingPositions');
     move.parentMove = req.body.parentMove;
+    move.childMoves = convertObjectIdArray(req, 'childMoves');
     move.updated = Date.now();
-
-    if (req.body.endingPositions) {
-      JSON.parse(req.body.endingPositions).forEach((endingPosition) => {
-        move.endingPositions.push(endingPosition);
-      });
-    };
-
-    if (req.body.childMoves) {
-      JSON.parse(req.body.childMoves).forEach((childMove) => {
-        move.childMoves.push(childMove);
-      });
-    };
 
     move.save((err, move) => {
       if (err) return res.status(500).send(err);
@@ -81,10 +61,22 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   Move.findByIdAndRemove(req.params.id, (err, move) => {
-    if (err) return res.status(500).send("There was a problem deleting the move.");
+    if (err) return res.status(500).send(err);
     if (!move) return res.status(404).send("No move found.");
     res.status(200).send(move.name + " was deleted.");
   });
 });
+
+const convertObjectIdArray = (req, fieldName) => {
+  const objectIdArray = []
+
+  if (req.body[fieldName]) {
+    JSON.parse(req.body[fieldName]).forEach((idString) => {
+      objectIdArray.push(mongoose.Types.ObjectId(idString));
+    });
+  };
+
+  return objectIdArray
+};
 
 module.exports = router;
