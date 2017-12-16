@@ -1,11 +1,10 @@
 require('dotenv').config();
 
-const express = require('express');
+const app = require('./app');
+const port = process.env.PORT || 3000;
+
 const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
-
-const app = express();
-const port = 8000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -18,7 +17,7 @@ MongoClient.connect(process.env.DB_URL, (err, dbConnection) => {
     require('./app/routes')(app, database);
 
     app.listen(port, () => {
-      console.log('Server running on port: ' + port);
+      console.log('Express server listening on port ' + port);
     });
   };
 });
