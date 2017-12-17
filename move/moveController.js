@@ -20,14 +20,14 @@ module.exports = {
   get: (req, res) => {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
-      if (!move) return res.status(404).send("No move found.");
+      if (!move) return res.status(404).send(err);
       res.status(200).send(move);
     });
   },
   update: (req, res) => {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
-      if (!move) return res.status(404).send("No move found.");
+      if (!move) return res.status(404).send(err);
       setMoveFields(req, move);
       move.updated = Date.now();
 
