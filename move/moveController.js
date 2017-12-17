@@ -17,6 +17,12 @@ module.exports = {
       res.status(200).send(moves);
     });
   },
+  filter: (req, res) => {
+    filterMoves(req).exec((err, moves) => {
+      if (err) return res.status(500).send(err);
+      res.status(200).send(moves);
+    });
+  },
   get: (req, res) => {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
@@ -68,4 +74,33 @@ convertObjectIdArray = (req, fieldName) => {
   };
 
   return objectIdArray
+};
+
+filterMoves = (req) => {
+  let moveQuery = Move.find();
+
+  const singleValueFields = ["name", "creationCategory", "moveCategory", "startingPosition", "parentMove"];
+  const arrayValueFields = ["endingPositions", "childMoves"];
+
+  singleValueFields.forEach((fieldName) => {
+    if (req.body[fieldName]) {
+      moveQuery = moveQuery.where(fieldName).equals(req.body[fieldName]);
+    };
+  });
+
+  arrayValueFields.forEach((fieldName) => {
+    if (req.body[fieldName]) {
+      const idObjectArray = [];
+
+      JSON.parse(req.query[fieldName]).forEach((idString) => {
+        const idObject = {};
+        idObject[fieldName] = idString;
+        idObjectArray.push(idObject);
+      });
+
+      moveQuery = moveQuery.and(idObjectArray);
+    };
+  });
+
+  return moveQuery;
 };
