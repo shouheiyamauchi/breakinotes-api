@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const moveSchema = new Schema({
   name: { type: String, index: true },
-  creationCategory: { type: String, index: true },
-  moveCategory: { type: String, index: true },
+  origin: { type: String, index: true },
+  type: { type: String, index: true },
   notes: String,
   startingPosition: { type: Schema.Types.ObjectId, ref: 'Move', index: true },
   endingPositions: [
