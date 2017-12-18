@@ -54,8 +54,8 @@ module.exports = {
 
 setMoveFields = (req, move) => {
   move.name = req.body.name;
-  move.creationCategory = req.body.creationCategory;
-  move.moveCategory = req.body.moveCategory;
+  move.origin = req.body.origin;
+  move.type = req.body.type;
   move.notes = req.body.notes;
   move.startingPosition = req.body.startingPosition;
   move.endingPositions = convertObjectIdArray(req, 'endingPositions');
@@ -79,7 +79,7 @@ convertObjectIdArray = (req, fieldName) => {
 filterMoves = (req) => {
   let moveQuery = Move.find();
 
-  const singleValueFields = ["name", "creationCategory", "moveCategory", "startingPosition", "parentMove"];
+  const singleValueFields = ["name", "origin", "type", "startingPosition", "parentMove"];
   const arrayValueFields = ["endingPositions", "childMoves"];
 
   singleValueFields.forEach((fieldName) => {
