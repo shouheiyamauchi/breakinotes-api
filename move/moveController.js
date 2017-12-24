@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Move = require('./moveModel');
+const async = require('async');
 
 module.exports = {
   create: (req, res) => {
@@ -18,7 +19,7 @@ module.exports = {
     });
   },
   filter: (req, res) => {
-    filterMoves(req).exec((err, moves) => {
+    filterMovesQuery(req).exec((err, moves) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moves);
     });
@@ -27,7 +28,43 @@ module.exports = {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
       if (!move) return res.status(404).send(err);
-      res.status(200).send(move);
+      // res.status(200).send(move);
+
+      moveObject = move;
+
+      async.parallel([
+        function(callback) {
+          Move.findById(move.startingPosition, (err, move) => {
+            if (err) return res.status(500).send(err);
+            moveObject['startingPosition'] = move;
+            callback(null, move);
+          });
+        },
+        function(callback) {
+          queryByArrayOfIds(move.endingPositions).exec((err, moves) => {
+            if (err) return res.status(500).send(err);
+            moveObject['endingPositions'] = moves;
+            callback(null, moves);
+          });
+        },
+        function(callback) {
+          Move.findById(move.parentMove, (err, move) => {
+            if (err) return res.status(500).send(err);
+            moveObject['parentMove'] = move;
+            callback(null, move);
+          });
+        },
+        function(callback) {
+          queryByArrayOfIds(move.childMoves).exec((err, moves) => {
+            if (err) return res.status(500).send(err);
+            moveObject['childMoves'] = moves;
+            callback(null, moves);
+          });
+        }
+      ],
+      function(err, results) {
+        res.status(200).send(moveObject);
+      });
     });
   },
   update: (req, res) => {
@@ -46,8 +83,8 @@ module.exports = {
   delete: (req, res) => {
     Move.findByIdAndRemove(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
-      if (!move) return res.status(404).send("No move found.");
-      res.status(200).send(move.name + " was deleted.");
+      if (!move) return res.status(404).send('No move found.');
+      res.status(200).send(move.name + ' was deleted.');
     });
   }
 };
@@ -76,11 +113,11 @@ convertObjectIdArray = (req, fieldName) => {
   return objectIdArray
 };
 
-filterMoves = (req) => {
+filterMovesQuery = (req) => {
   let moveQuery = Move.find();
 
-  const singleValueFields = ["name", "origin", "type", "startingPosition", "parentMove"];
-  const arrayValueFields = ["endingPositions", "childMoves"];
+  const singleValueFields = ['name', 'origin', 'type', 'startingPosition', 'parentMove'];
+  const arrayValueFields = ['endingPositions', 'childMoves'];
 
   singleValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {
@@ -92,15 +129,19 @@ filterMoves = (req) => {
     if (req.body[fieldName]) {
       const idObjectArray = [];
 
-      JSON.parse(req.query[fieldName]).forEach((idString) => {
+      JSON.parse(req.body[fieldName]).forEach((idString) => {
         const idObject = {};
         idObject[fieldName] = idString;
         idObjectArray.push(idObject);
       });
-
+      // queries for documents which contain all items in array
       moveQuery = moveQuery.and(idObjectArray);
     };
   });
 
   return moveQuery;
+};
+
+queryByArrayOfIds = (ids) => {
+  return Move.where('_id').in(ids);
 };
