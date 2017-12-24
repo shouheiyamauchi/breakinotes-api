@@ -94,11 +94,11 @@ setMoveFields = (req, move) => {
   move.origin = req.body.origin;
   move.type = req.body.type;
   move.notes = req.body.notes;
-  move.startingPosition = req.body.startingPosition;
+  move.startingPosition = (req.body.startingPosition === '') ? undefined : req.body.startingPosition;
   move.endingPositions = convertObjectIdArray(req, 'endingPositions');
-  move.parentMove = req.body.parentMove;
+  move.parentMove = (req.body.parentMove === '') ? undefined : req.body.parentMove;
   move.childMoves = convertObjectIdArray(req, 'childMoves');
-  move.multimedia = (req.body.multimedia == undefined) ? [] : JSON.parse(req.body.multimedia);
+  move.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
 };
 
 convertObjectIdArray = (req, fieldName) => {
