@@ -28,9 +28,8 @@ module.exports = {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
       if (!move) return res.status(404).send(err);
-      // res.status(200).send(move);
 
-      moveObject = move;
+      const moveObject = move.toObject();
 
       async.parallel([
         function(callback) {
