@@ -52,13 +52,6 @@ module.exports = {
             moveObject['parentMove'] = move;
             callback(null, move);
           });
-        },
-        function(callback) {
-          queryByArrayOfIds(move.childMoves).exec((err, moves) => {
-            if (err) return res.status(500).send(err);
-            moveObject['childMoves'] = moves;
-            callback(null, moves);
-          });
         }
       ],
       function(err, results) {
@@ -96,7 +89,6 @@ setMoveFields = (req, move) => {
   move.startingPosition = (req.body.startingPosition === '') ? undefined : req.body.startingPosition;
   move.endingPositions = convertObjectIdArray(req, 'endingPositions');
   move.parentMove = (req.body.parentMove === '') ? undefined : req.body.parentMove;
-  move.childMoves = convertObjectIdArray(req, 'childMoves');
   move.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
 };
 
@@ -116,7 +108,7 @@ filterMovesQuery = (req) => {
   let moveQuery = Move.find();
 
   const singleValueFields = ['name', 'origin', 'type', 'startingPosition', 'parentMove'];
-  const arrayValueFields = ['endingPositions', 'childMoves'];
+  const arrayValueFields = ['endingPositions'];
 
   singleValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {

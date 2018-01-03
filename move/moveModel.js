@@ -17,7 +17,6 @@ const moveSchema = new Schema({
   startingPosition: { type: Schema.Types.ObjectId, ref: 'Move', index: true },
   endingPositions: { type: [Schema.Types.ObjectId], ref: 'Move', default: [], index: true },
   parentMove: { type: Schema.Types.ObjectId, ref: 'Move' },
-  childMoves: { type: [Schema.Types.ObjectId], ref: 'Move', default: [] },
   multimedia: { type: [multimediaSchema], default: [] },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }
