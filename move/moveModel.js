@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const multimediaSchema = new Schema({
   name: { type: String },
-  media_type: { type: String },
-  url: { type: String }
+  source: { type: String },
+  value: { type: String }
 });
 
 const moveSchema = new Schema({
