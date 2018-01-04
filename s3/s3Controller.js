@@ -1,11 +1,12 @@
 const aws = require('aws-sdk');
 
-aws.config.region = 'ap-southeast-2';
+aws.config.region = process.env.S3_REGION;
 const S3_BUCKET = process.env.S3_BUCKET;
+
+const s3 = new aws.S3();
 
 module.exports = {
   signedUrl: (req, res) => {
-    const s3 = new aws.S3();
     const fileName = req.body.fileName;
     const fileType = req.body.fileType;
     const s3Params = {
@@ -25,8 +26,7 @@ module.exports = {
       res.status(200).send(returnData);
     });
   },
-  delete: () => {
-    const s3 = new aws.S3();
+  delete: (req, res) => {
     const fileName = req.body.fileName;
     const s3Params = {
      Bucket: S3_BUCKET,
