@@ -40,8 +40,8 @@ module.exports = {
   delete: (req, res) => {
     const fileName = req.body.fileName;
     const s3Params = {
-     Bucket: S3_BUCKET,
-     Key: fileName
+      Bucket: S3_BUCKET,
+      Key: fileName
     };
 
     s3.deleteObject(s3Params, (err, data) => {
