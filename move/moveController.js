@@ -33,10 +33,10 @@ module.exports = {
 
       async.parallel([
         function(callback) {
-          Move.findById(move.startingPosition, (err, move) => {
+          queryByArrayOfIds(move.startingPositions).exec((err, moves) => {
             if (err) return res.status(500).send(err);
-            moveObject['startingPosition'] = move;
-            callback(null, move);
+            moveObject['startingPositions'] = moves;
+            callback(null, moves);
           });
         },
         function(callback) {
@@ -86,7 +86,7 @@ setMoveFields = (req, move) => {
   move.origin = req.body.origin;
   move.type = req.body.type;
   move.notes = req.body.notes;
-  move.startingPosition = (req.body.startingPosition === '') ? undefined : req.body.startingPosition;
+  move.startingPositions = convertObjectIdArray(req, 'startingPositions');
   move.endingPositions = convertObjectIdArray(req, 'endingPositions');
   move.parentMove = (req.body.parentMove === '') ? undefined : req.body.parentMove;
   move.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
@@ -107,8 +107,8 @@ convertObjectIdArray = (req, fieldName) => {
 filterMovesQuery = (req) => {
   let moveQuery = Move.find();
 
-  const singleValueFields = ['name', 'origin', 'type', 'startingPosition', 'parentMove'];
-  const arrayValueFields = ['endingPositions'];
+  const singleValueFields = ['name', 'origin', 'type', 'parentMove'];
+  const arrayValueFields = ['startingPositions', 'endingPositions'];
 
   singleValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {
