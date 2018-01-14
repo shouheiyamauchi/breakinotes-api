@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "pm2 server.js"
+    "start": "pm2 start server.js"
   },
   "license": "MIT",
   "dependencies": {
