@@ -82,17 +82,17 @@ module.exports = {
   suggestions: (req, res) => {
     // suggest potential starting/ending positings based on other moves with same starting/ending positions
     async.parallel({
-      startingPositionsSuggestion: function(callback) {
+      startingPositionSuggestions: function(callback) {
         getSuggestions(req, res, 'startingPositions', callback);
       },
-      endingPositionsSuggestion: function(callback) {
+      endingPositionSuggestions: function(callback) {
         getSuggestions(req, res, 'endingPositions', callback);
       }
     },
     function(err, results) {
       res.status(200).send({
-        startingPositionsSuggestion: results.startingPositionsSuggestion,
-        endingPositionsSuggestion: results.endingPositionsSuggestion
+        startingPositionSuggestions: results.startingPositionSuggestions,
+        endingPositionSuggestions: results.endingPositionSuggestions
       });
     });
   }
@@ -156,18 +156,18 @@ getSuggestions = (req, res, startingOrEndingPositionsString, callback) => {
   queryByArrayOfIds(startingOrEndingPositionsString, startingOrEndingPositionsArray).exec((err, moves) => {
     if (err) return res.status(500).send(err);
 
-    let positionsSuggestionIdObjects = [];
+    let positionSuggestionIdObjects = [];
     moves.forEach(move => {
-      positionsSuggestionIdObjects = positionsSuggestionIdObjects.concat(move[startingOrEndingPositionsString]);
+      positionSuggestionIdObjects = positionSuggestionIdObjects.concat(move[startingOrEndingPositionsString]);
     })
 
-    let positionsSuggestionIds = positionsSuggestionIdObjects.map(id => id.toString());
+    let positionSuggestionIds = positionSuggestionIdObjects.map(id => id.toString());
     // remove duplicates
-    positionsSuggestionIds = positionsSuggestionIds.filter((positionsSuggestionId, index, fullArray) => {
-      return fullArray.indexOf(positionsSuggestionId) === index && !startingOrEndingPositionsArray.includes(positionsSuggestionId);
+    positionSuggestionIds = positionSuggestionIds.filter((positionSuggestionId, index, fullArray) => {
+      return fullArray.indexOf(positionSuggestionId) === index && !startingOrEndingPositionsArray.includes(positionSuggestionId);
     });
 
-    queryByArrayOfIds('_id', positionsSuggestionIds).exec((err, moves) => {
+    queryByArrayOfIds('_id', positionSuggestionIds).exec((err, moves) => {
       if (err) return res.status(500).send(err);
 
       callback(null, moves);
