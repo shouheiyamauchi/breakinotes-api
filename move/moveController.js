@@ -33,14 +33,14 @@ module.exports = {
 
       async.parallel([
         function(callback) {
-          queryByArrayOfIds(move.startingPositions).exec((err, moves) => {
+          queryByArrayOfIds('_id', move.startingPositions).exec((err, moves) => {
             if (err) return res.status(500).send(err);
             moveObject['startingPositions'] = moves;
             callback(null, moves);
           });
         },
         function(callback) {
-          queryByArrayOfIds(move.endingPositions).exec((err, moves) => {
+          queryByArrayOfIds('_id', move.endingPositions).exec((err, moves) => {
             if (err) return res.status(500).send(err);
             moveObject['endingPositions'] = moves;
             callback(null, moves);
@@ -77,6 +77,23 @@ module.exports = {
       if (err) return res.status(500).send(err);
       if (!move) return res.status(404).send('No move found.');
       res.status(200).send(move.name + ' was deleted.');
+    });
+  },
+  suggestions: (req, res) => {
+    // suggest potential starting/ending positings based on other moves with same starting/ending positions
+    async.parallel({
+      startingPositionsSuggestion: function(callback) {
+        getSuggestions(req, res, 'startingPositions', callback);
+      },
+      endingPositionsSuggestion: function(callback) {
+        getSuggestions(req, res, 'endingPositions', callback);
+      }
+    },
+    function(err, results) {
+      res.status(200).send({
+        startingPositionsSuggestion: results.startingPositionsSuggestion,
+        endingPositionsSuggestion: results.endingPositionsSuggestion
+      });
     });
   }
 };
@@ -133,6 +150,31 @@ filterMovesQuery = (req) => {
   return moveQuery;
 };
 
-queryByArrayOfIds = (ids) => {
-  return Move.where('_id').in(ids);
+getSuggestions = (req, res, startingOrEndingPositionsString, callback) => {
+  const startingOrEndingPositionsArray = JSON.parse(req.body[startingOrEndingPositionsString]);
+
+  queryByArrayOfIds(startingOrEndingPositionsString, startingOrEndingPositionsArray).exec((err, moves) => {
+    if (err) return res.status(500).send(err);
+
+    let positionsSuggestionIdObjects = [];
+    moves.forEach(move => {
+      positionsSuggestionIdObjects = positionsSuggestionIdObjects.concat(move[startingOrEndingPositionsString]);
+    })
+
+    let positionsSuggestionIds = positionsSuggestionIdObjects.map(id => id.toString());
+    // remove duplicates
+    positionsSuggestionIds = positionsSuggestionIds.filter((positionsSuggestionId, index, fullArray) => {
+      return fullArray.indexOf(positionsSuggestionId) === index && !startingOrEndingPositionsArray.includes(positionsSuggestionId);
+    });
+
+    queryByArrayOfIds('_id', positionsSuggestionIds).exec((err, moves) => {
+      if (err) return res.status(500).send(err);
+
+      callback(null, moves);
+    });
+  });
+};
+
+queryByArrayOfIds = (moveProperty, idsArray) => {
+  return Move.where(moveProperty).in(idsArray);
 };
