@@ -7,7 +7,6 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use(passport.initialize());
-  router.get('/test', (req, res) => {console.log(req.get('Authorization'))});
 router.use(passport.authenticate('jwt', { session: false }));
 
 router.post('/', moveController.create);
