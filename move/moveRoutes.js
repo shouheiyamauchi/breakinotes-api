@@ -1,9 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const moveController = require('./moveController');
+const passport = require('../middleware/auth');
 
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
+
+router.use(passport.initialize());
+router.use(passport.authenticate('jwt', { session: false }));
 
 router.post('/', moveController.create);
 router.get('/', moveController.list);
