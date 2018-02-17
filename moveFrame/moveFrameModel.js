@@ -9,14 +9,12 @@ const multimediaSchema = new Schema({
   value: { type: String }
 });
 
-const moveSchema = new Schema({
+const moveFrameSchema = new Schema({
   name: { type: String, required: true, index: true },
   origin: { type: String, required: true, index: true },
   type: { type: String, required: true, index: true },
   notes: { type: String },
-  startingPositions: { type: [Schema.Types.ObjectId], ref: 'MoveFrame', default: [], index: true },
-  endingPositions: { type: [Schema.Types.ObjectId], ref: 'MoveFrame', default: [], index: true },
-  parentMove: { type: Schema.Types.ObjectId, ref: 'Move' },
+  parentMove: { type: Schema.Types.ObjectId, ref: 'MoveFrame' },
   multimedia: { type: [multimediaSchema], default: [] },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }
@@ -24,6 +22,6 @@ const moveSchema = new Schema({
   usePushEach: true
 });
 
-mongoose.model('Move', moveSchema);
+mongoose.model('MoveFrame', moveFrameSchema);
 
-module.exports = mongoose.model('Move');
+module.exports = mongoose.model('MoveFrame');
