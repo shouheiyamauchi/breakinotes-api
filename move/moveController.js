@@ -34,17 +34,17 @@ module.exports = {
 
       async.parallel([
         function(callback) {
-          moveFramesByArrayOfIds('_id', move.startingPositions).exec((err, moves) => {
+          moveFramesByArrayOfIds('_id', move.startingPositions).exec((err, moveFrames) => {
             if (err) return res.status(500).send(err);
-            moveObject['startingPositions'] = moves;
-            callback(null, moves);
+            moveObject['startingPositions'] = moveFrames;
+            callback(null, moveFrames);
           });
         },
         function(callback) {
-          moveFramesByArrayOfIds('_id', move.endingPositions).exec((err, moves) => {
+          moveFramesByArrayOfIds('_id', move.endingPositions).exec((err, moveFrames) => {
             if (err) return res.status(500).send(err);
-            moveObject['endingPositions'] = moves;
-            callback(null, moves);
+            moveObject['endingPositions'] = moveFrames;
+            callback(null, moveFrames);
           });
         },
         function(callback) {
@@ -52,6 +52,13 @@ module.exports = {
             if (err) return res.status(500).send(err);
             moveObject['parentMove'] = move;
             callback(null, move);
+          });
+        },
+        function(callback) {
+          movesByArrayOfIds('parentMove', [move._id]).exec((err, moves) => {
+            if (err) return res.status(500).send(err);
+            moveObject['childMoves'] = moves;
+            callback(null, moves);
           });
         }
       ],
