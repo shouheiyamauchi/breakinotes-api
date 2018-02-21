@@ -33,25 +33,32 @@ module.exports = {
       const moveFrameObject = moveFrame.toObject();
 
       async.parallel([
-        // function(callback) {
-        //   moveFrameFramesByArrayOfIds('_id', moveFrame.startingPositions).exec((err, moveFrames) => {
-        //     if (err) return res.status(500).send(err);
-        //     moveFrameObject['startingPositions'] = moveFrames;
-        //     callback(null, moveFrames);
-        //   });
-        // },
-        // function(callback) {
-        //   moveFrameFramesByArrayOfIds('_id', moveFrame.endingPositions).exec((err, moveFrames) => {
-        //     if (err) return res.status(500).send(err);
-        //     moveFrameObject['endingPositions'] = moveFrames;
-        //     callback(null, moveFrames);
-        //   });
-        // },
+        function(callback) {
+          movesByArrayOfIds('endingPositions', [moveFrame._id]).exec((err, moves) => {
+            if (err) return res.status(500).send(err);
+            moveFrameObject['entries'] = moves;
+            callback(null, moves);
+          });
+        },
+        function(callback) {
+          movesByArrayOfIds('startingPositions', [moveFrame._id]).exec((err, moves) => {
+            if (err) return res.status(500).send(err);
+            moveFrameObject['exits'] = moves;
+            callback(null, moves);
+          });
+        },
         function(callback) {
           MoveFrame.findById(moveFrame.parentMove, (err, moveFrame) => {
             if (err) return res.status(500).send(err);
             moveFrameObject['parentMove'] = moveFrame;
             callback(null, moveFrame);
+          });
+        },
+        function(callback) {
+          moveFramesByArrayOfIds('parentMove', [moveFrame._id]).exec((err, moveFrames) => {
+            if (err) return res.status(500).send(err);
+            moveFrameObject['childMoves'] = moveFrames;
+            callback(null, moveFrames);
           });
         }
       ],
@@ -119,4 +126,8 @@ filterMoveFramesQuery = (req) => {
 
 moveFramesByArrayOfIds = (moveFrameProperty, idsArray) => {
   return MoveFrame.where(moveFrameProperty).in(idsArray);
+};
+
+movesByArrayOfIds = (moveProperty, idsArray) => {
+  return Move.where(moveProperty).in(idsArray);
 };
