@@ -14,7 +14,7 @@ const moveFrameSchema = new Schema({
   origin: { type: String, required: true, index: true },
   type: { type: String, required: true, index: true },
   notes: { type: String },
-  parentMove: { type: Schema.Types.ObjectId, ref: 'MoveFrame' },
+  parent: { type: Schema.Types.ObjectId, ref: 'MoveFrame' },
   multimedia: { type: [multimediaSchema], default: [] },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }

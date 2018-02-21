@@ -48,14 +48,14 @@ module.exports = {
           });
         },
         function(callback) {
-          MoveFrame.findById(moveFrame.parentMove, (err, moveFrame) => {
+          MoveFrame.findById(moveFrame.parent, (err, moveFrame) => {
             if (err) return res.status(500).send(err);
-            moveFrameObject['parentMove'] = moveFrame;
+            moveFrameObject['parent'] = moveFrame;
             callback(null, moveFrame);
           });
         },
         function(callback) {
-          moveFramesByArrayOfIds('parentMove', [moveFrame._id]).exec((err, moveFrames) => {
+          moveFramesByArrayOfIds('parent', [moveFrame._id]).exec((err, moveFrames) => {
             if (err) return res.status(500).send(err);
             moveFrameObject['childMoves'] = moveFrames;
             callback(null, moveFrames);
@@ -94,7 +94,7 @@ setMoveFrameFields = (req, moveFrame) => {
   moveFrame.origin = req.body.origin;
   moveFrame.type = req.body.type;
   moveFrame.notes = req.body.notes;
-  moveFrame.parentMove = (req.body.parentMove === '') ? undefined : req.body.parentMove;
+  moveFrame.parent = (req.body.parent === '') ? undefined : req.body.parent;
   moveFrame.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
 };
 
@@ -113,7 +113,7 @@ convertObjectIdArray = (req, fieldName) => {
 filterMoveFramesQuery = (req) => {
   let moveFrameQuery = MoveFrame.find();
 
-  const singleValueFields = ['name', 'origin', 'type', 'parentMove'];
+  const singleValueFields = ['name', 'origin', 'type', 'parent'];
 
   singleValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {
