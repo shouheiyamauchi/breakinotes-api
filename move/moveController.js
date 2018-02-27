@@ -115,6 +115,7 @@ setMoveFields = (req, move) => {
   move.endingPositions = convertObjectIdArray(req, 'endingPositions');
   move.parent = (req.body.parent === '') ? undefined : req.body.parent;
   move.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
+  move.draft = req.body.draft;
 };
 
 convertObjectIdArray = (req, fieldName) => {
@@ -132,7 +133,7 @@ convertObjectIdArray = (req, fieldName) => {
 filterMovesQuery = (req) => {
   let moveQuery = Move.find();
 
-  const singleValueFields = ['name', 'origin', 'type', 'parent'];
+  const singleValueFields = ['name', 'origin', 'type', 'parent', 'draft'];
   const arrayValueFields = ['startingPositions', 'endingPositions'];
 
   singleValueFields.forEach((fieldName) => {

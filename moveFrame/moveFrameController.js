@@ -96,6 +96,7 @@ setMoveFrameFields = (req, moveFrame) => {
   moveFrame.notes = req.body.notes;
   moveFrame.parent = (req.body.parent === '') ? undefined : req.body.parent;
   moveFrame.multimedia = (req.body.multimedia === undefined || req.body.multimedia === '') ? [] : JSON.parse(req.body.multimedia);
+  moveFrame.draft = req.body.draft;
 };
 
 convertObjectIdArray = (req, fieldName) => {
@@ -113,7 +114,7 @@ convertObjectIdArray = (req, fieldName) => {
 filterMoveFramesQuery = (req) => {
   let moveFrameQuery = MoveFrame.find();
 
-  const singleValueFields = ['name', 'origin', 'type', 'parent'];
+  const singleValueFields = ['name', 'origin', 'type', 'parent', 'draft'];
 
   singleValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {
