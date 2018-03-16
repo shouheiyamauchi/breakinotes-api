@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const Move = require('./moveModel');
-const MoveFrame = require('../moveFrame/moveFrameModel');
+const Move = require('../models/Move');
+const MoveFrame = require('../models/MoveFrame');
 const async = require('async');
 
 module.exports = {

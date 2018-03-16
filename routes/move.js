@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const moveController = require('./moveController');
+const moveController = require('../controllers/move');
 const passport = require('../middleware/auth');
 
 const router = express.Router();

@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const s3Controller = require('./s3Controller');
+const s3Controller = require('../controllers/s3');
 const passport = require('../middleware/auth');
 
 const router = express.Router();

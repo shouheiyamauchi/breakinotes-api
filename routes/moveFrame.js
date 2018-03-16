@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const moveFrameController = require('./moveFrameController');
+const moveFrameController = require('../controllers/moveFrame');
 const passport = require('../middleware/auth');
 
 const router = express.Router();

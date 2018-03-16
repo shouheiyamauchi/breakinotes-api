@@ -1,28 +1,24 @@
 const mongoose = require('mongoose');
+const multimediaSchema = require('./multimediaSchema');
 
 mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
-const multimediaSchema = new Schema({
-  name: { type: String },
-  source: { type: String },
-  value: { type: String }
-});
-
-const moveFrameSchema = new Schema({
+const moveSchema = new Schema({
   name: { type: String, required: true, index: true },
   origin: { type: String, required: true, index: true },
   type: { type: String, required: true, index: true },
   notes: { type: String },
-  parent: { type: Schema.Types.ObjectId, ref: 'MoveFrame' },
+  startingPositions: { type: [Schema.Types.ObjectId], ref: 'Move', default: [], index: true },
+  endingPositions: { type: [Schema.Types.ObjectId], ref: 'Move', default: [], index: true },
+  parentMove: { type: Schema.Types.ObjectId, ref: 'Move' },
   multimedia: { type: [multimediaSchema], default: [] },
-  draft: { type: Boolean, default: true },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }
 }, {
   usePushEach: true
 });
 
-mongoose.model('MoveFrame', moveFrameSchema);
+mongoose.model('Move', moveSchema);
 
-module.exports = mongoose.model('MoveFrame');
+module.exports = mongoose.model('Move');
