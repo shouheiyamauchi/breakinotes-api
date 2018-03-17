@@ -9,9 +9,9 @@ const moveSchema = new Schema({
   origin: { type: String, required: true, index: true },
   type: { type: String, required: true, index: true },
   notes: { type: String },
-  startingPositions: { type: [Schema.Types.ObjectId], ref: 'Move', default: [], index: true },
-  endingPositions: { type: [Schema.Types.ObjectId], ref: 'Move', default: [], index: true },
-  parentMove: { type: Schema.Types.ObjectId, ref: 'Move' },
+  startingPositions: [{ type: Schema.Types.ObjectId, ref: 'MoveFrame', default: [], index: true }],
+  endingPositions: [{ type: Schema.Types.ObjectId, ref: 'MoveFrame', default: [], index: true }],
+  parent: { type: Schema.Types.ObjectId, ref: 'Move' },
   multimedia: { type: [multimediaSchema], default: [] },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }

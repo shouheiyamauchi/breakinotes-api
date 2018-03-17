@@ -26,43 +26,20 @@ module.exports = {
     });
   },
   get: (req, res) => {
-    Move.findById(req.params.id, (err, move) => {
+    Move.findById(req.params.id)
+    .populate('startingPositions')
+    .populate('endingPositions')
+    .populate('parent')
+    .exec((err, move) => {
       if (err) return res.status(500).send(err);
       if (!move) return res.status(404).send(err);
 
-      const moveObject = move.toObject();
+      movesByArrayOfIds('parent', [move._id]).exec((err, moves) => {
+        if (err) return res.status(500).send(err);
+        const moveObject = move.toObject();
 
-      async.parallel([
-        function(callback) {
-          moveFramesByArrayOfIds('_id', move.startingPositions).exec((err, moveFrames) => {
-            if (err) return res.status(500).send(err);
-            moveObject['startingPositions'] = moveFrames;
-            callback(null, moveFrames);
-          });
-        },
-        function(callback) {
-          moveFramesByArrayOfIds('_id', move.endingPositions).exec((err, moveFrames) => {
-            if (err) return res.status(500).send(err);
-            moveObject['endingPositions'] = moveFrames;
-            callback(null, moveFrames);
-          });
-        },
-        function(callback) {
-          Move.findById(move.parent, (err, move) => {
-            if (err) return res.status(500).send(err);
-            moveObject['parent'] = move;
-            callback(null, move);
-          });
-        },
-        function(callback) {
-          movesByArrayOfIds('parent', [move._id]).exec((err, moves) => {
-            if (err) return res.status(500).send(err);
-            moveObject['childMoves'] = moves;
-            callback(null, moves);
-          });
-        }
-      ],
-      function(err, results) {
+        moveObject['childMoves'] = moves;
+
         res.status(200).send(moveObject);
       });
     });

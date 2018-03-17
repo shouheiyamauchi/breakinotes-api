@@ -26,7 +26,9 @@ module.exports = {
     });
   },
   get: (req, res) => {
-    MoveFrame.findById(req.params.id, (err, moveFrame) => {
+    MoveFrame.findById(req.params.id)
+    .populate('parent')
+    .exec((err, moveFrame) => {
       if (err) return res.status(500).send(err);
       if (!moveFrame) return res.status(404).send(err);
 
@@ -45,13 +47,6 @@ module.exports = {
             if (err) return res.status(500).send(err);
             moveFrameObject['exits'] = moves;
             callback(null, moves);
-          });
-        },
-        function(callback) {
-          MoveFrame.findById(moveFrame.parent, (err, moveFrame) => {
-            if (err) return res.status(500).send(err);
-            moveFrameObject['parent'] = moveFrame;
-            callback(null, moveFrame);
           });
         },
         function(callback) {
