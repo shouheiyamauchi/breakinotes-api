@@ -106,7 +106,7 @@ convertObjectIdArray = (req, fieldName) => {
   return objectIdArray
 };
 
-filterMoveFramesQuery = (req) => {
+filterMoveFramesQuery = req => {
   let moveFrameQuery = MoveFrame.find();
 
   const singleValueFields = ['name', 'origin', 'type', 'parent', 'draft'];
