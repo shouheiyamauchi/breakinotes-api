@@ -12,13 +12,17 @@ module.exports = {
     })
   },
   list: (req, res) => {
-    MoveSet.find({}, (err, moveSets) => {
+    MoveSet.find()
+    .populate('moves.item')
+    .exec((err, moveSets) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moveSets);
     });
   },
   filter: (req, res) => {
-    filterMoveSetsQuery(req).exec((err, moveSets) => {
+    filterMoveSetsQuery(req)
+    .populate('moves.item')
+    .exec((err, moveSets) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moveSets);
     })
@@ -64,7 +68,13 @@ setMoveSetFields = (req, moveSet) => {
 filterMoveSetsQuery = req => {
   let moveSetQuery = MoveSet.find();
 
-  // filter by name and moves
+  if (req.body.name) moveSetQuery = moveSetQuery.where('name').equals(req.body.name);
+
+  if (req.body.moves) {
+    const movesQueryArray = JSON.parse(req.body.moves).map(move => { return { 'moves.moveType': move.moveType, 'moves.item': move.item }});
+
+    moveSetQuery = req.body.movesAndOr === 'and'  ? moveSetQuery.and(movesQueryArray) : moveSetQuery.or(movesQueryArray);
+  };
 
   return moveSetQuery;
 };

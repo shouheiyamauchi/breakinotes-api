@@ -121,15 +121,9 @@ filterMovesQuery = (req) => {
 
   arrayValueFields.forEach((fieldName) => {
     if (req.body[fieldName]) {
-      const idObjectArray = [];
+      const idObjectArray = JSON.parse(req.body[fieldName]).map((idString) => { return { [fieldName]: idString }});
 
-      JSON.parse(req.body[fieldName]).forEach((idString) => {
-        const idObject = {};
-        idObject[fieldName] = idString;
-        idObjectArray.push(idObject);
-      });
-      // queries for documents which contain all items in array
-      moveQuery = moveQuery.and(idObjectArray);
+      moveQuery = req.body[fieldName + 'AndOr'] === 'and' ? moveQuery.and(idObjectArray) : moveQuery.or(idObjectArray);
     };
   });
 
