@@ -4,7 +4,7 @@ const multimediaSchema = require('./multimediaSchema');
 mongoose.Promise = global.Promise;
 const Schema = mongoose.Schema;
 
-const setSchema = new Schema({
+const moveSetSchema = new Schema({
   name: { type: String, required: true, index: true },
   moves: [{
     moveType: String,
@@ -19,6 +19,6 @@ const setSchema = new Schema({
   usePushEach: true
 });
 
-mongoose.model('Set', setSchema);
+mongoose.model('MoveSet', moveSetSchema);
 
-module.exports = mongoose.model('Set');
+module.exports = mongoose.model('MoveSet');

@@ -6,8 +6,8 @@ const passport = require('../middleware/auth');
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 
-// router.use(passport.initialize());
-// router.use(passport.authenticate('jwt', { session: false }));
+router.use(passport.initialize());
+router.use(passport.authenticate('jwt', { session: false }));
 
 router.post('/', practiceItemController.create);
 router.get('/', practiceItemController.list);
