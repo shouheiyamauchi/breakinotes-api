@@ -15,5 +15,6 @@ router.post('/filter', practiceItemController.filter);
 router.get('/:id', practiceItemController.get);
 router.put('/:id', practiceItemController.update);
 router.delete('/:id', practiceItemController.delete);
+router.post('/toggle', practiceItemController.toggle);
 
 module.exports = router;

@@ -9,17 +9,24 @@ module.exports = {
 
     practiceItem.save((err, practiceItem) => {
       if (err) return res.status(500).send(err);
-      res.status(200).send(practiceItem);
+      practiceItem.populate('move.item', (err, practiceItems => {
+        if (err) return res.status(500).send(err);
+        res.status(200).send(practiceItem);
+      }));
     })
   },
   list: (req, res) => {
-    PracticeItem.find({}, (err, practiceItems) => {
+    PracticeItem.find()
+    .populate('move.item')
+    .exec((err, practiceItems) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(practiceItems);
     });
   },
   filter: (req, res) => {
-    filterPracticeItemsQuery(req).exec((err, practiceItems) => {
+    filterPracticeItemsQuery(req)
+    .populate('move.item')
+    .exec((err, practiceItems) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(practiceItems);
     })
@@ -42,7 +49,10 @@ module.exports = {
 
       practiceItem.save((err, practiceItem) => {
         if (err) return res.status(500).send(err);
-        res.status(200).send(practiceItem);
+        practiceItem.populate('move.item', (err, practiceItems => {
+          if (err) return res.status(500).send(err);
+          res.status(200).send(practiceItem);
+        }));
       });
     });
   },
@@ -51,6 +61,22 @@ module.exports = {
       if (err) return res.status(500).send(err);
       if (!practiceItem) return res.status(404).send('No practice item found.');
       res.status(200).send('Practice item was deleted.');
+    });
+  },
+  toggle: (req, res) => {
+    PracticeItem.findById(req.body.id, (err, practiceItem) => {
+      if (err) return res.status(500).send(err);
+      if (!practiceItem) return res.status(404).send(err);
+      practiceItem.completed = !practiceItem.completed;
+      practiceItem.updated = Date.now();
+
+      practiceItem.save((err, practiceItem) => {
+        if (err) return res.status(500).send(err);
+        practiceItem.populate('move.item', (err, practiceItems => {
+          if (err) return res.status(500).send(err);
+          res.status(200).send(practiceItem);
+        }));
+      });
     });
   }
 };
