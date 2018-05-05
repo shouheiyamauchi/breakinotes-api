@@ -13,6 +13,7 @@ const moveSchema = new Schema({
   endingPositions: [{ type: Schema.Types.ObjectId, ref: 'MoveFrame', default: [], index: true }],
   parent: { type: Schema.Types.ObjectId, ref: 'Move' },
   multimedia: { type: [multimediaSchema], default: [] },
+  draft: { type: Boolean, default: true },
   created: { type: Date, default: Date.now },
   updated: { type: Date, default: Date.now }
 }, {
