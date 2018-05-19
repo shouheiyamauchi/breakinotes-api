@@ -17,5 +17,8 @@ module.exports = {
         res.json({message: "login unsuccessful"});
       };
     });
+  },
+  checkAuthentication: (req, res) => {
+    res.json({message: "valid login token"});
   }
 };
