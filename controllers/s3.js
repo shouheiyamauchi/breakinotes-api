@@ -13,7 +13,7 @@ module.exports = {
       Key: fileName
     };
     s3.getSignedUrl('getObject', s3Params, (err, data) => {
-      if (err) res.status(500).send(err);
+      if (err) return res.status(500).send(err);
       res.status(200).send(data);
     });
   },
@@ -29,7 +29,7 @@ module.exports = {
     };
 
     s3.getSignedUrl('putObject', s3Params, (err, data) => {
-      if (err) res.status(500).send(err);
+      if (err) return res.status(500).send(err);
       const returnData = {
         signedRequest: data,
         url: 'https://' + S3_BUCKET + '.s3.amazonaws.com/' + fileName
@@ -45,7 +45,7 @@ module.exports = {
     };
 
     s3.deleteObject(s3Params, (err, data) => {
-      if (err) res.status(500).send(err);
+      if (err) return res.status(500).send(err);
       res.status(200).send(fileName + ' was deleted');
     });
   }

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 module.exports = {
   login: (req, res) => {
     User.findOne({'username': req.body.username}).exec((err, user) => {
-      if (err) return;
+      if (err) return res.status(500).send(err);
 
       const correctPassword = bcrypt.compareSync(req.body.password, user.password);
 
