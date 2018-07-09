@@ -20,7 +20,7 @@ module.exports = {
     });
   },
   filter: (req, res) => {
-    filterMovesQuery(req).exec((err, moves) => {
+    filterMovesQuery(req).sort([['draft', -1], ['type', 1], ['origin', 1], ['name', 1]]).exec((err, moves) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moves);
     });

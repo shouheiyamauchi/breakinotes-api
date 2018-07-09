@@ -20,7 +20,7 @@ module.exports = {
     });
   },
   filter: (req, res) => {
-    filterMoveFramesQuery(req).exec((err, moveFrames) => {
+    filterMoveFramesQuery(req).sort([['draft', -1], ['type', 1], ['origin', 1], ['name', 1]]).exec((err, moveFrames) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moveFrames);
     });

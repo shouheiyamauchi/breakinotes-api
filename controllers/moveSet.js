@@ -22,6 +22,7 @@ module.exports = {
   filter: (req, res) => {
     filterMoveSetsQuery(req)
     .populate('moves.item')
+    .sort([['draft', -1], ['name', 1]])
     .exec((err, moveSets) => {
       if (err) return res.status(500).send(err);
       res.status(200).send(moveSets);
