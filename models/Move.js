@@ -15,7 +15,8 @@ const moveSchema = new Schema({
   multimedia: { type: [multimediaSchema], default: [] },
   draft: { type: Boolean, default: true },
   created: { type: Date, default: Date.now },
-  updated: { type: Date, default: Date.now }
+  updated: { type: Date, default: Date.now },
+  touched: { type: Date, default: Date.now }
 }, {
   usePushEach: true
 });
