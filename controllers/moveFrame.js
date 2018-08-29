@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 const MoveFrame = require('../models/MoveFrame');
 const Move = require('../models/Move');
 const async = require('async');
@@ -80,6 +81,24 @@ module.exports = {
       if (err) return res.status(500).send(err);
       if (!moveFrame) return res.status(404).send('No move frame found.');
       res.status(200).send(moveFrame.name + ' was deleted.');
+    });
+  },
+  touched: (req, res) => {
+    MoveFrame.find({ touched: { '$lte': moment().subtract(req.body.value, req.body.unit) }}, (err, moveFrames) => {
+      if (err) return res.status(500).send(err);
+      res.status(200).send(moveFrames);
+    });
+  },
+  forceTouch: (req, res) => {
+    MoveFrame.findById(req.params.id, (err, moveFrame) => {
+      if (err) return res.status(500).send(err);
+      if (!moveFrame) return res.status(404).send(err);
+      moveFrame.touched = Date.now();
+
+      moveFrame.save((err, moveFrame) => {
+        if (err) return res.status(500).send(err);
+        res.status(200).send(moveFrame);
+      });
     });
   }
 };

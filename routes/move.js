@@ -16,5 +16,7 @@ router.get('/:id', moveController.get);
 router.put('/:id', moveController.update);
 router.delete('/:id', moveController.delete);
 router.post('/suggestions', moveController.suggestions);
+router.post('/touched', moveController.touched);
+router.post('/forceTouch/:id', moveController.forceTouch);
 
 module.exports = router;

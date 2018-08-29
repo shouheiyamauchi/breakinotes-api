@@ -15,5 +15,7 @@ router.post('/filter', moveFrameController.filter);
 router.get('/:id', moveFrameController.get);
 router.put('/:id', moveFrameController.update);
 router.delete('/:id', moveFrameController.delete);
+router.post('/touched', moveFrameController.touched);
+router.post('/forceTouch/:id', moveFrameController.forceTouch);
 
 module.exports = router;

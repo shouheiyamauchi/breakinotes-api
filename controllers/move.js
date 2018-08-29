@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 const Move = require('../models/Move');
 const MoveFrame = require('../models/MoveFrame');
 const async = require('async');
@@ -78,6 +79,24 @@ module.exports = {
       res.status(200).send({
         startingPositionSuggestions: results.startingPositionSuggestions,
         endingPositionSuggestions: results.endingPositionSuggestions
+      });
+    });
+  },
+  touched: (req, res) => {
+    Move.find({ touched: { '$lte': moment().subtract(req.body.value, req.body.unit) }}, (err, moves) => {
+      if (err) return res.status(500).send(err);
+      res.status(200).send(moves);
+    });
+  },
+  forceTouch: (req, res) => {
+    Move.findById(req.params.id, (err, move) => {
+      if (err) return res.status(500).send(err);
+      if (!move) return res.status(404).send(err);
+      move.touched = Date.now();
+
+      move.save((err, move) => {
+        if (err) return res.status(500).send(err);
+        res.status(200).send(move);
       });
     });
   }
