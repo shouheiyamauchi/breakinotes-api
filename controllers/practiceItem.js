@@ -93,7 +93,7 @@ filterPracticeItemsQuery = req => {
   let practiceItemQuery = PracticeItem.find();
 
   if (req.body.startDate && req.body.endDate) practiceItemQuery = practiceItemQuery.where('date').in(getDatesArray(req.body.startDate, req.body.endDate));
-  if (req.body.move) practiceItemQuery = practiceItemQuery.find({ 'move.moveType': JSON.parse(req.body.move).moveType, 'move.id': JSON.parse(req.body.move).item });
+  if (req.body.move) practiceItemQuery = practiceItemQuery.find({ 'move.moveType': JSON.parse(req.body.move).moveType, 'move.item': JSON.parse(req.body.move).item }).sort([['date', -1]]).limit(JSON.parse(req.body.move).limit);
 
   return practiceItemQuery;
 };
