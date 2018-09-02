@@ -9,11 +9,10 @@ module.exports = {
 
     practiceItem.save((err, practiceItem) => {
       if (err) return res.status(500).send(err);
-      practiceItem.populate('move.item', (err, practiceItems => {
-        if (err) return res.status(500).send(err);
+      practiceItem.populate('move.item', () => {
         res.status(200).send(practiceItem);
-      }));
-    })
+      });
+    });
   },
   list: (req, res) => {
     PracticeItem.find()
@@ -49,10 +48,9 @@ module.exports = {
 
       practiceItem.save((err, practiceItem) => {
         if (err) return res.status(500).send(err);
-        practiceItem.populate('move.item', (err, practiceItems => {
-          if (err) return res.status(500).send(err);
+        practiceItem.populate('move.item', () => {
           res.status(200).send(practiceItem);
-        }));
+        });
       });
     });
   },
@@ -72,10 +70,9 @@ module.exports = {
 
       practiceItem.save((err, practiceItem) => {
         if (err) return res.status(500).send(err);
-        practiceItem.populate('move.item', (err, practiceItems => {
-          if (err) return res.status(500).send(err);
+        practiceItem.populate('move.item', () => {
           res.status(200).send(practiceItem);
-        }));
+        });
       });
     });
   }
