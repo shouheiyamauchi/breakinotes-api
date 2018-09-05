@@ -95,15 +95,22 @@ module.exports = {
       if (!moveFrame) return res.status(404).send(err);
       moveFrame.touched = Date.now();
 
-      moveFrame.save((err, moveFrame) => {
-        if (err) return res.status(500).send(err);
-        res.status(200).send(moveFrame);
+      module.exports.forceTouchMoveFrame(moveFrame, (touchedErr, touchedMoveFrame) => {
+        if (touchedErr) return res.status(500).send(touchedErr);
+        res.status(200).send(touchedMoveFrame);
       });
+    });
+  },
+  forceTouchMoveFrame: async (moveFrame, cb = () => {}) => {
+    moveFrame.touched = Date.now();
+
+    await moveFrame.save((err, touchedMoveFrame) => {
+      cb(err, touchedMoveFrame);
     });
   }
 };
 
-setMoveFrameFields = (req, moveFrame) => {
+const setMoveFrameFields = (req, moveFrame) => {
   moveFrame.name = req.body.name;
   moveFrame.origin = req.body.origin;
   moveFrame.type = req.body.type;
@@ -113,7 +120,7 @@ setMoveFrameFields = (req, moveFrame) => {
   moveFrame.draft = req.body.draft;
 };
 
-convertObjectIdArray = (req, fieldName) => {
+const convertObjectIdArray = (req, fieldName) => {
   const objectIdArray = []
 
   if (req.body[fieldName]) {
@@ -125,7 +132,7 @@ convertObjectIdArray = (req, fieldName) => {
   return objectIdArray
 };
 
-filterMoveFramesQuery = req => {
+const filterMoveFramesQuery = req => {
   let moveFrameQuery = MoveFrame.find();
 
   const singleValueFields = ['name', 'origin', 'type', 'parent', 'draft'];
@@ -139,10 +146,10 @@ filterMoveFramesQuery = req => {
   return moveFrameQuery;
 };
 
-moveFramesByArrayOfIds = (moveFrameProperty, idsArray) => {
+const moveFramesByArrayOfIds = (moveFrameProperty, idsArray) => {
   return MoveFrame.where(moveFrameProperty).in(idsArray);
 };
 
-movesByArrayOfIds = (moveProperty, idsArray) => {
+const movesByArrayOfIds = (moveProperty, idsArray) => {
   return Move.where(moveProperty).in(idsArray);
 };

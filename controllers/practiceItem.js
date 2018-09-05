@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
 const PracticeItem = require('../models/PracticeItem');
+const { forceTouchMove } = require('./move');
+const { forceTouchMoveFrame } = require('./moveFrame');
+const { forceTouchMoveSet } = require('./moveSet');
 
 module.exports = {
   create: (req, res) => {
@@ -71,6 +74,19 @@ module.exports = {
       practiceItem.save((err, practiceItem) => {
         if (err) return res.status(500).send(err);
         practiceItem.populate('move.item', () => {
+
+          switch(practiceItem.move.moveType) {
+            case 'Move':
+              forceTouchMove(practiceItem.move.item);
+              break;
+            case 'MoveFrame':
+              forceTouchMoveFrame(practiceItem.move.item);
+              break;
+            case 'MoveSet':
+              forceTouchMoveSet(practiceItem.move.item);
+              break;
+          };
+
           res.status(200).send(practiceItem);
         });
       });
@@ -78,7 +94,7 @@ module.exports = {
   }
 };
 
-setPracticeItemFields = (req, practiceItem) => {
+const setPracticeItemFields = (req, practiceItem) => {
   practiceItem.date = moment.utc(req.body.date, 'DD/MM/YYYY').format();
   practiceItem.move = JSON.parse(req.body.move);
   practiceItem.notes = req.body.notes;
@@ -86,7 +102,7 @@ setPracticeItemFields = (req, practiceItem) => {
   practiceItem.completed = req.body.completed;
 };
 
-filterPracticeItemsQuery = req => {
+const filterPracticeItemsQuery = req => {
   let practiceItemQuery = PracticeItem.find();
 
   if (req.body.startDate && req.body.endDate) practiceItemQuery = practiceItemQuery.where('date').in(getDatesArray(req.body.startDate, req.body.endDate));
@@ -95,7 +111,7 @@ filterPracticeItemsQuery = req => {
   return practiceItemQuery;
 };
 
-getDatesArray = (startDate, endDate) => {
+const getDatesArray = (startDate, endDate) => {
   const dateArray = [];
   let currentDate = moment.utc(startDate, 'DD/MM/YYYY');
   const dateLimit = moment.utc(endDate, 'DD/MM/YYYY');

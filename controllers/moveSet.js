@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const MoveSet = require('../models/MoveSet');
+const { forceTouchMove } = require('./move');
+const { forceTouchMoveFrame } = require('./moveFrame');
 
 module.exports = {
   create: (req, res) => {
@@ -56,10 +58,24 @@ module.exports = {
       if (!moveSet) return res.status(404).send('No move set item found.');
       res.status(200).send('Move set was deleted.');
     });
+  },
+  forceTouchMoveSet: async (moveSet, cb = () => {}) => {
+    await moveSet.populate('moves.item', () => {
+      moveSet.moves.forEach((move) => {
+        switch(move.moveType) {
+          case 'Move':
+            forceTouchMove(move.item);
+            break;
+          case 'MoveFrame':
+            forceTouchMoveFrame(move.item);
+            break;
+        };
+      });
+    });
   }
 };
 
-setMoveSetFields = (req, moveSet) => {
+const setMoveSetFields = (req, moveSet) => {
   moveSet.name = req.body.name;
   moveSet.moves = !req.body.moves ? [] : JSON.parse(req.body.moves);
   moveSet.notes = req.body.notes;
@@ -67,7 +83,7 @@ setMoveSetFields = (req, moveSet) => {
   moveSet.draft = req.body.draft;
 };
 
-filterMoveSetsQuery = req => {
+const filterMoveSetsQuery = req => {
   let moveSetQuery = MoveSet.find();
 
   if (req.body.name) moveSetQuery = moveSetQuery.where('name').equals(req.body.name);

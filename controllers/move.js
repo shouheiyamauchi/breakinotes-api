@@ -92,17 +92,23 @@ module.exports = {
     Move.findById(req.params.id, (err, move) => {
       if (err) return res.status(500).send(err);
       if (!move) return res.status(404).send(err);
-      move.touched = Date.now();
 
-      move.save((err, move) => {
-        if (err) return res.status(500).send(err);
-        res.status(200).send(move);
+      module.exports.forceTouchMove(move, (touchedErr, touchedMove) => {
+        if (touchedErr) return res.status(500).send(touchedErr);
+        res.status(200).send(touchedMove);
       });
+    });
+  },
+  forceTouchMove: async (move, cb = () => {}) => {
+    move.touched = Date.now();
+
+    await move.save((err, touchedMove) => {
+      cb(err, touchedMove);
     });
   }
 };
 
-setMoveFields = (req, move) => {
+const setMoveFields = (req, move) => {
   move.name = req.body.name;
   move.origin = req.body.origin;
   move.type = req.body.type;
@@ -114,7 +120,7 @@ setMoveFields = (req, move) => {
   move.draft = req.body.draft;
 };
 
-convertObjectIdArray = (req, fieldName) => {
+const convertObjectIdArray = (req, fieldName) => {
   const objectIdArray = []
 
   if (req.body[fieldName]) {
@@ -126,7 +132,7 @@ convertObjectIdArray = (req, fieldName) => {
   return objectIdArray
 };
 
-filterMovesQuery = (req) => {
+const filterMovesQuery = (req) => {
   let moveQuery = Move.find();
 
   const singleValueFields = ['name', 'origin', 'type', 'parent', 'draft'];
@@ -149,7 +155,7 @@ filterMovesQuery = (req) => {
   return moveQuery;
 };
 
-getSuggestions = (req, res, startingOrEndingPositionsString, callback) => {
+const getSuggestions = (req, res, startingOrEndingPositionsString, callback) => {
   const startingOrEndingPositionsArray = JSON.parse(req.body[startingOrEndingPositionsString]);
 
   movesByArrayOfIds(startingOrEndingPositionsString, startingOrEndingPositionsArray).exec((err, moves) => {
@@ -174,10 +180,10 @@ getSuggestions = (req, res, startingOrEndingPositionsString, callback) => {
   });
 };
 
-moveFramesByArrayOfIds = (moveFrameProperty, idsArray) => {
+const moveFramesByArrayOfIds = (moveFrameProperty, idsArray) => {
   return MoveFrame.where(moveFrameProperty).in(idsArray);
 };
 
-movesByArrayOfIds = (moveProperty, idsArray) => {
+const movesByArrayOfIds = (moveProperty, idsArray) => {
   return Move.where(moveProperty).in(idsArray);
 };
