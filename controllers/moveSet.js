@@ -77,6 +77,7 @@ module.exports = {
 
 const setMoveSetFields = (req, moveSet) => {
   moveSet.name = req.body.name;
+  moveSet.type = req.body.type;
   moveSet.moves = !req.body.moves ? [] : JSON.parse(req.body.moves);
   moveSet.notes = req.body.notes;
   moveSet.multimedia = !req.body.multimedia ? [] : JSON.parse(req.body.multimedia);

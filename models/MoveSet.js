@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 
 const moveSetSchema = new Schema({
   name: { type: String, required: true, index: true },
+  type: { type: String, required: true, index: true },
   moves: [{
     moveType: String,
     item: { type: Schema.Types.ObjectId, refPath: 'moves.moveType' }
