@@ -6,6 +6,7 @@ module.exports = {
   login: (req, res) => {
     User.findOne({'username': req.body.username}).exec((err, user) => {
       if (err) return res.status(500).send(err);
+      if (!user) return res.status(404).send(err);
 
       const correctPassword = bcrypt.compareSync(req.body.password, user.password);
 
